@@ -160,7 +160,7 @@ vllm serve hygon/GLM-5-Channel-INT4-w4a8 \
 
 ### GLM-5-Channel-INT4-w4a8 IFB BW1000 16x vLLM 0.18 非异步调度 PP+MTP
 
-以下示例为单节点部署。
+以下示例为双节点PP+MTP部署。
 
 ```bash
 export VLLM_ROCM_USE_AITER_MOE=1
