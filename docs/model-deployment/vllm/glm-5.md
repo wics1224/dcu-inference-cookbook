@@ -115,7 +115,6 @@ vllm serve hygon/GLM-5-Channel-INT8-w8a8 \
 
 ```bash
 export VLLM_USE_MODELSCOPE=1
-export LMSLIM_USE_LIGHTOP=0
 export VLLM_HCU_USE_FLASHMLA=1
 export LMSLIM_USE_GLOBAL_MOE_CACHE=1
 
@@ -167,6 +166,8 @@ vllm serve hygon/GLM-5-Channel-INT4-w4a8 \
 
 以下示例为双节点PP+MTP部署。
 
+#### Node 1
+
 ```bash
 export VLLM_USE_MODELSCOPE=1
 export VLLM_ROCM_USE_AITER_MOE=1
@@ -176,7 +177,6 @@ export LMSLIM_USE_GLOBAL_MOE_CACHE=1
 vllm serve hygon/GLM-5-Channel-INT4-w4a8 \
     --trust-remote-code \
     --dtype bfloat16 \
-    --distributed-executor-backend ray \
     -tp 8 \
     -pp 2 \
     --max-model-len 56320 \
@@ -185,6 +185,34 @@ vllm serve hygon/GLM-5-Channel-INT4-w4a8 \
     --kv-cache-dtype fp8_ds_mla \
     --speculative_config '{"method": "mtp", "num_speculative_tokens": 2}' \
     --no-async-scheduling
+    --nnodes 2 \
+    --node-rank 0 \
+    --master-addr <node1_ip>
+```
+
+#### Node 2
+
+```bash
+export VLLM_USE_MODELSCOPE=1
+export VLLM_ROCM_USE_AITER_MOE=1
+export VLLM_HCU_USE_FLASHMLA=1
+export LMSLIM_USE_GLOBAL_MOE_CACHE=1
+
+vllm serve hygon/GLM-5-Channel-INT4-w4a8 \
+    --trust-remote-code \
+    --dtype bfloat16 \
+    -tp 8 \
+    -pp 2 \
+    --max-model-len 56320 \
+    --gpu-memory-utilization 0.92 \
+    --max-num-batched-tokens 8192 \
+    --kv-cache-dtype fp8_ds_mla \
+    --speculative_config '{"method": "mtp", "num_speculative_tokens": 2}' \
+    --no-async-scheduling
+    --nnodes 2 \
+    --node-rank 1 \
+    --master-addr <node1_ip> \
+    --headless
 ```
 
 **vLLM 0.15**
